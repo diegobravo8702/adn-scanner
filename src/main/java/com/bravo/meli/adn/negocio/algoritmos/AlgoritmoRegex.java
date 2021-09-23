@@ -19,7 +19,7 @@ public class AlgoritmoRegex extends Algoritmo {
 	 */
 	@Override
 	public boolean isMutant(String[] cadenas) throws DatosInvalidosException {
-		// validarCadenas(cadenas);
+		validarCadenas(cadenas);
 
 		Matcher matcher;
 
@@ -32,8 +32,8 @@ public class AlgoritmoRegex extends Algoritmo {
 	}
 
 	/**
-	 * Transforma el array de cadenas de adn en un string que inckluye todos los
-	 * casos de evaluaciuon: cadenas horizontales, verticales y diagonales
+	 * Transforma el array de cadenas de ADN en un string que incluye todos los
+	 * casos de evaluación: cadenas horizontales, verticales y diagonales
 	 * 
 	 * @param cadenas
 	 * @return cadenaCondensada
