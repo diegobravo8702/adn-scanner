@@ -3,9 +3,6 @@ package com.bravo.meli.adn.negocio.algoritmos;
 import com.bravo.meli.adn.negocio.interfaces.Analizable;
 import com.bravo.meli.adn.negocio.interfaces.Validable;
 
-import lombok.Data;
-
-@Data
 public abstract class Algoritmo implements Validable, Analizable {
 	final static byte limiteDeSecuencia = (byte) 4;
 	final static byte limiteDeHallazgos = (byte) 1;
@@ -14,6 +11,14 @@ public abstract class Algoritmo implements Validable, Analizable {
 
 	public Algoritmo() {
 		hallazgos = 0;
+	}
+
+	public long getHallazgos() {
+		return hallazgos;
+	}
+
+	public void setHallazgos(long hallazgos) {
+		this.hallazgos = hallazgos;
 	}
 
 }
