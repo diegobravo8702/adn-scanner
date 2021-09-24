@@ -11,7 +11,7 @@ import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
  * @author diego
  *
  */
-@Component
+
 public class AlgoritmoRegexEstricto extends Algoritmo {
 
 	/**
