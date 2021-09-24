@@ -1,4 +1,4 @@
-package com.bravo.meli.adn.service;
+package com.bravo.meli.adn.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
 
 @RestController
 @RequestMapping("/mutant")
-public class Mutant {
+public class MutantService {
 
 	@Autowired
 	AlgoritmoRegexEstricto algoritmo;
