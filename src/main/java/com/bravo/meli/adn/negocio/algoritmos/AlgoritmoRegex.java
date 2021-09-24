@@ -2,8 +2,8 @@ package com.bravo.meli.adn.negocio.algoritmos;
 
 import java.util.regex.Matcher;
 
-import com.bravo.meli.adn.negocio.Analizable;
 import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
+import com.bravo.meli.adn.negocio.interfaces.Analizable;
 
 /**
  * 

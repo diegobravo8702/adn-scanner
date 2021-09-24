@@ -2,7 +2,8 @@ package com.bravo.meli.adn.negocio.algoritmos;
 
 import java.util.regex.Matcher;
 
-import com.bravo.meli.adn.negocio.Analizable;
+import org.springframework.stereotype.Component;
+
 import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
 
 /**
@@ -10,6 +11,7 @@ import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
  * @author diego
  *
  */
+@Component
 public class AlgoritmoRegexEstricto extends Algoritmo {
 
 	/**
@@ -99,65 +101,4 @@ public class AlgoritmoRegexEstricto extends Algoritmo {
 
 		return false;
 	}
-
-	public static void main(String args[]) {
-		// String cadenas[] = null;// = { "aaat", "", "", "" };
-		//@formatter:off
-		String cadenas[] = { 
-				"acfjouCK",
-				"beintBJR", 
-				"dhmsAIQY", 
-				"glrzHPXd", 
-				"kqyGOVch", 
-				"pxFNUbgk", 
-				"vEMTafjm",
-				"DLSZeiln", };
-		String cadenas2[] = { 
-				"TGACTGAC",
-				"GGACTGAC", 
-				"TGACTGAC", 
-				"GGACTGAC", 
-				"TGACTGAC", 
-				"GGACTGAC", 
-				"TGACTGAC",
-				"TGACTGAC", };
-
-
-	String demoNoMutante[] = {
-		"ATGCGA" ,
-		"CAGTGC", 
-		"TTATTT", 
-		"AGACGG", 
-		"GCGTCA", 
-		"TCACTG" };
-
-	String demoSiMutante[] = {
-			//"AAAAAA",
-		"ATGCGA",
-		"CAGTGC",
-		"TTATGT",
-		"AGAAGG",
-		"CCCCTA",
-		"TCACTG",
-	};
-	String demoDiagonalA[] = {
-			//"AAAAAA",
-		"TGGAGG",
-		"GAGAGG",
-		"GGTAGG",
-		"GGGTGG",
-		"GGGATG",
-		"GGGAGT",
-	};
-		//@formatter:on
-
-		Analizable analizador = new AlgoritmoRegexEstricto();
-		try {
-			System.out.println();
-			System.out.println(analizador.isMutant(demoSiMutante) ? "Mutante" : "NO MUTANTE");
-		} catch (DatosInvalidosException e) {
-			System.out.println(e);
-		}
-	}
-
 }

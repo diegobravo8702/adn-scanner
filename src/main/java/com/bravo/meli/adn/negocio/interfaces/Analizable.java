@@ -1,4 +1,4 @@
-package com.bravo.meli.adn.negocio;
+package com.bravo.meli.adn.negocio.interfaces;
 
 import java.util.regex.Pattern;
 
