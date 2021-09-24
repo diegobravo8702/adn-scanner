@@ -12,6 +12,10 @@ import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
  */
 public class AlgoritmoRegex extends Algoritmo {
 
+	public AlgoritmoRegex() {
+		super();
+	}
+
 	/**
 	 * 
 	 * @param cadenas

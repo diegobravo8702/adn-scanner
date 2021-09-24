@@ -31,7 +31,7 @@ public class AlgoritmoRegexEstricto extends Algoritmo {
 		return 0l;
 	}
 
-	private boolean esMutanteActualizandoContadores(StringBuilder buffer,String log) {
+	private boolean esMutanteActualizandoContadores(StringBuilder buffer, String log) {
 		String cadena = buffer.toString();
 		buffer.setLength(0);
 		long hallazgosLocales = obtenerCantidadAnomalias(cadena);
@@ -41,8 +41,7 @@ public class AlgoritmoRegexEstricto extends Algoritmo {
 	}
 
 	/**
-	 * Transforma el array de cadenas de ADN en un string que incluye todos los
-	 * casos de evaluación: cadenas horizontales, verticales y diagonales
+	 * Transforma el array de cadenas de ADN en un string que incluye todos los casos de evaluación: cadenas horizontales, verticales y diagonales
 	 * 
 	 * @param cadenas
 	 * @return cadenaCondensada
@@ -55,16 +54,13 @@ public class AlgoritmoRegexEstricto extends Algoritmo {
 		StringBuilder bufferDiagonalA = new StringBuilder();
 		StringBuilder bufferDiagonalB = new StringBuilder();
 
-		// con dos indices se recorre la totalidad de la matriz
 		for (int fila = 0; fila < indice; fila++) {
 			// se llena buffer horizontal, no requiere contador de columnas
 			// System.out.println("fila: " + fila);
-			bufferHorizontales.append(cadenas[fila]);			
+			bufferHorizontales.append(cadenas[fila]);
 
-			// Esta se utiliza para indicar si en el recorrido por las diagonales nos
-			// encontramos evaluando la diagonal antes de salirnos del arreglo. Cuando esto
-			// ocurre se recalculan los indices para continuar leyendo la matriz al otro
-			// lado de donde se excedió el limite.
+			// Esta se utiliza para indicar si en el recorrido por las diagonales nos encontramos evaluando la diagonal antes de salirnos del arreglo. Cuando esto ocurre se recalculan los indices para
+			// continuar leyendo la matriz al otro lado de donde se excedió el limite.
 			boolean parteSuperior = true;
 			for (int columna = 0; columna < indice; columna++) {
 				// System.out.println("colu: " + columna);
@@ -84,8 +80,7 @@ public class AlgoritmoRegexEstricto extends Algoritmo {
 					if (parteSuperior) {
 						parteSuperior = false;
 						// ya se ha llenado los buffer de la parte superior. Se evaluan.
-						if (esMutanteActualizandoContadores(bufferDiagonalA,"A")
-								|| esMutanteActualizandoContadores(bufferDiagonalB,"B")) {
+						if (esMutanteActualizandoContadores(bufferDiagonalA, "A") || esMutanteActualizandoContadores(bufferDiagonalB, "B")) {
 							return true;
 						}
 					}
@@ -96,9 +91,8 @@ public class AlgoritmoRegexEstricto extends Algoritmo {
 				}
 			}
 			// se evalua los bufferes
-			if (esMutanteActualizandoContadores(bufferHorizontales,"H") || esMutanteActualizandoContadores(bufferVerticales,"V")
-					|| esMutanteActualizandoContadores(bufferDiagonalA,"A")
-					|| esMutanteActualizandoContadores(bufferDiagonalB,"B")) {
+			if (esMutanteActualizandoContadores(bufferHorizontales, "H") || esMutanteActualizandoContadores(bufferVerticales, "V") || esMutanteActualizandoContadores(bufferDiagonalA, "A")
+					|| esMutanteActualizandoContadores(bufferDiagonalB, "B")) {
 				return true;
 			}
 		}
@@ -156,7 +150,7 @@ public class AlgoritmoRegexEstricto extends Algoritmo {
 		"GGGAGT",
 	};
 		//@formatter:on
-		
+
 		Analizable analizador = new AlgoritmoRegexEstricto();
 		try {
 			System.out.println();
