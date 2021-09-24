@@ -6,8 +6,9 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.4</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<version>2.5.5</version>
+		<relativePath />
+		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.bravo</groupId>
 	<artifactId>adn-scanner</artifactId>
@@ -15,20 +16,12 @@
 	<name>adn-scanner</name>
 	<description></description>
 	<properties>
-		<version.lombok>1.18.20</version.lombok>
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -38,7 +31,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${version.lombok}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

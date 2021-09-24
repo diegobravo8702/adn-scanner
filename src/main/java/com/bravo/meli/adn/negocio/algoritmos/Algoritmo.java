@@ -1,7 +1,7 @@
 package com.bravo.meli.adn.negocio.algoritmos;
 
-import com.bravo.meli.adn.negocio.Analizable;
-import com.bravo.meli.adn.negocio.Validable;
+import com.bravo.meli.adn.negocio.interfaces.Analizable;
+import com.bravo.meli.adn.negocio.interfaces.Validable;
 
 import lombok.Data;
 

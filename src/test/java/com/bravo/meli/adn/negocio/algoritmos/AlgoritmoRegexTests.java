@@ -90,4 +90,17 @@ class AlgoritmoRegexTests {
 
 		assertEquals(ErrorCode.CADENAS_TAMANOS_DISPARES.getMessage(), exception.getCode().getMessage());
 	}
+
+	public void compute() {
+
+		Long l1 = 0L;
+		Long l2 = 1L;
+		Long l = 0L;
+		for (int i = 0; i < 100000; i++) {
+			l = l1 + l2;
+			l1 = l2;
+			l2 = l;
+		}
+		System.out.println(l);
+	}
 }

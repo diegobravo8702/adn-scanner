@@ -2,8 +2,8 @@ package com.bravo.meli.adn.negocio.algoritmos;
 
 import java.util.regex.Matcher;
 
-import com.bravo.meli.adn.negocio.Analizable;
 import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
+import com.bravo.meli.adn.negocio.interfaces.Analizable;
 
 /**
  * 
@@ -24,20 +24,11 @@ public class AlgoritmoRegex extends Algoritmo {
 	@Override
 	public boolean isMutant(String[] cadenas) throws DatosInvalidosException {
 		validarCadenas(cadenas);
-
-		Matcher matcher;
-
-		matcher = patronMutante.matcher(condensarCadenas(cadenas));
-		if (matcher.find()) {
-			return true;
-		}
-
-		return false;
+		return patronMutante.matcher(condensarCadenas(cadenas)).find();
 	}
 
 	/**
-	 * Transforma el array de cadenas de ADN en un string que incluye todos los
-	 * casos de evaluación: cadenas horizontales, verticales y diagonales
+	 * Transforma el array de cadenas de ADN en un string que incluye todos los casos de evaluación: cadenas horizontales, verticales y diagonales
 	 * 
 	 * @param cadenas
 	 * @return cadenaCondensada
