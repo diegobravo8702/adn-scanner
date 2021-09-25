@@ -53,6 +53,36 @@ public class AlgoritmoListillo extends Algoritmo {
 		return new Coordenada(posicion1D / indice, posicion1D % indice);
 	}
 
+	/**
+	 como la matriz se puede recorrer en distintas direcciones, se debe crear un algoritmo que me entregue la posicion 2D de una posicion cercana relativa
+	 por ejemplo:
+	 si recorro la matriz en direccion diagonal principal (sup izq -> inf derecha) la casilla siguiente a la celda 3,4 seria 4,5
+	 mientras que la siguiente a la 5,2 seria la 6,4 pero esta no existe en la matriz, nos hemos salido. si fuera como el juego del pacman que se sale al otro lado
+	 la casilla seria la 0.3 pero en el ejercicio de mercadolibre no se contemplo este escenario. los bordes son el límite. aunque saber eso sirve en la logica de los dos algoritmos anteriores a este
+
+	 nota para mas adelante: pedirle a esta funcion que entregue un dato y ese este fuera del borde puede servir de fin de algun proceso o tambien para indicar que hay un separador de palabras .. no se aun.
+	 
+	*/
+
+	enum direccion{
+		horizontal,
+		vertical,
+		diagonalPrincipal,
+		diagonalInversa
+	};
+
+// se llama getSiguiente pero puede traer saltandose x espacios
+	private Coordenada getSiguiente(direccion dir, int saltarse){
+		switch (dir){
+			case horizontal:
+
+			break;
+			default:
+		}
+		return new Coordenada(0,0);
+
+	}
+
 	@Override
 	public boolean isMutant(String[] adn) throws DatosInvalidosException {
 		// La idea es ir dando saltos en el arreglo hasta llegar al sigueinte valor que deberia ser igual al prmero para considerarse un hallazgo
@@ -60,8 +90,9 @@ public class AlgoritmoListillo extends Algoritmo {
 		// aqui habra ciclos dentro de ciclos por lo que al darse el hallazgo se notifica con un return
 
 		boolean debemosContinuar = true;
+		int punteroPrincipal = 0;
 		while(debemosContinuar){
-			
+
 		}
 
 		return false;
