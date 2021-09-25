@@ -64,7 +64,7 @@ public class AlgoritmoListillo extends Algoritmo {
 	 
 	*/
 
-	enum direccion{
+	enum inclinacion{
 		horizontal,
 		vertical,
 		diagonalPrincipal,
@@ -72,10 +72,17 @@ public class AlgoritmoListillo extends Algoritmo {
 	};
 
 // se llama getSiguiente pero puede traer saltandose x espacios
-	private Coordenada getSiguiente(direccion dir, int saltarse){
-		switch (dir){
-			case horizontal:
+	private Coordenada getSiguiente(Coordenada posicionActual, inclinacion inc, int objetivoEnPasos){
+		// Estas dos representan cuanto debe cambiar la coordenada actual para llegar hasta la nueva.
+		// Otra forma de verlo es cuanto se debe sumarse o restarse para ser el nuevo valor.
+		// la manera de ir hacia adelante (derecha) o hacia atras(izquierda) es con el signo de delta.
+		int deltaX = 0;
+		int deltaY = 0;
 
+		switch (inc){
+			case horizontal:
+				deltaY = 0; // como es horizontal pues no cambia.
+				deltaY = posicionActual.getCol() + objetivoEnPasos;
 			break;
 			default:
 		}
@@ -101,7 +108,7 @@ public class AlgoritmoListillo extends Algoritmo {
 	public static void main(String [] args) {
 		AlgoritmoListillo app = new AlgoritmoListillo();
 		
-		for(int i=0 ; i<20 ; i++) {
+		for(int i=0 ; i<200 ; i++) {
 			System.out.println("" + i + "" + app.getCoordenadas2D(i, 6));
 		}
 		
