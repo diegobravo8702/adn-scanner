@@ -92,8 +92,8 @@ public class AlgoritmoRegex extends Algoritmo {
 		cadenasCombinadas.append(cadenaDiagonalA.toString());
 		cadenasCombinadas.append(cadenaDiagonalB.toString());
 
-		System.out.println();
-		System.out.println(cadenasCombinadas.toString());
+//		System.out.println();
+//		System.out.println(cadenasCombinadas.toString());
 
 		return cadenasCombinadas.toString();
 	}
@@ -113,7 +113,7 @@ public class AlgoritmoRegex extends Algoritmo {
 		//@formatter:on
 		Analizable analizador = new AlgoritmoRegex();
 		try {
-			System.out.println();
+//			System.out.println();
 			System.out.println(analizador.isMutant(cadenas) ? "Mutante" : "Muggle");
 		} catch (DatosInvalidosException e) {
 			System.out.println(e);

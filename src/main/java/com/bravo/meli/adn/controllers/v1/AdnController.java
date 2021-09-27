@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bravo.meli.adn.models.AdnModel;
-import com.bravo.meli.adn.negocio.algoritmos.AlgoritmoRegexEstricto;
+import com.bravo.meli.adn.negocio.algoritmos.Algoritmo;
+import com.bravo.meli.adn.negocio.algoritmos.AlgoritmoListillo;
 import com.bravo.meli.adn.negocio.dto.DnaDto;
 import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
 import com.bravo.meli.adn.services.AdnService;
@@ -20,12 +21,11 @@ public class AdnController {
 	@Autowired
 	AdnService adnService;
 
-	
-	AlgoritmoRegexEstricto algoritmo;
+	Algoritmo algoritmo;
 
 	@PostMapping
 	public ResponseEntity<String> isMutant(@RequestBody DnaDto dna) {
-		AlgoritmoRegexEstricto algoritmo = new AlgoritmoRegexEstricto();
+		Algoritmo algoritmo = new AlgoritmoListillo();
 		AdnModel adnModel = new AdnModel();
 		try {
 			adnModel.setAdn(dna.toString());
@@ -36,7 +36,7 @@ public class AdnController {
 			} else {
 				adnModel.setTipo("HUMANO");
 				adnService.guardarAdn(adnModel);
-				return ResponseEntity.status(403).body("Forbidden");
+				return ResponseEntity.status(403).build();
 			}
 
 		} catch (DatosInvalidosException e) {
