@@ -3,12 +3,24 @@ package com.bravo.meli.adn.negocio.algoritmos;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bravo.meli.adn.negocio.algoritmos.AlgoritmoListillo.inclinacion;
 import com.bravo.meli.adn.negocio.excepciones.DatosInvalidosException;
 
 public class AlgoritmoListillo extends Algoritmo {
 
 	private String[] adn;
 	private int indice;
+	
+	private int lecturas = 0;
+
+	
+	public int getLecturas() {
+		return lecturas;
+	}
+
+	public void setLecturas(int lecturas) {
+		this.lecturas = lecturas;
+	}
 
 	public AlgoritmoListillo() {
 	}
@@ -78,12 +90,12 @@ public class AlgoritmoListillo extends Algoritmo {
 	/**
 	 * Retorna la siguiente coordenada válida o null si no tiene siguiente.
 	 * 
-	 * @param posicionActual
+	 * @param coordenadaActual
 	 * @param inc
 	 * @param objetivoEnPasos
 	 * @return
 	 */
-	private Coordenada getSiguienteValida(Coordenada posicionActual, inclinacion inc, int objetivoEnPasos) {
+	private Coordenada getSiguienteCoordenadaValida(Coordenada coordenadaActual, inclinacion inc, int objetivoEnPasos) {
 		// Estas dos representan cuanto debe cambiar la coordenada actual para llegar hasta la nueva.
 		// Otra forma de verlo es cuanto se debe sumarse o restarse para ser el nuevo valor.
 		// la manera de ir hacia adelante (derecha) o hacia atras(izquierda) es con el signo de delta.
@@ -113,10 +125,9 @@ public class AlgoritmoListillo extends Algoritmo {
 			break;
 		}
 
-		nuevaPosicionY = posicionActual.getFil() + deltaY;
-		nuevaPosicionX = posicionActual.getCol() + deltaX;
-		System.out.println("                getSiguienteValida(posicionActual: " + posicionActual.toString() + "  , inc: " + inc + "   , objetivoEnPasos: " + objetivoEnPasos + "  )  ->    "
-				+ ((nuevaPosicionY < 0 || nuevaPosicionY >= indice || nuevaPosicionX >= indice) ? "null" : new Coordenada(nuevaPosicionY, nuevaPosicionX).toString()));
+		nuevaPosicionY = coordenadaActual.getFil() + deltaY;
+		nuevaPosicionX = coordenadaActual.getCol() + deltaX;
+		// ---- System.out.println(" getSiguienteValida(posicionActual: " + coordenadaActual.toString() + " , inc: " + inc + " , objetivoEnPasos: " + objetivoEnPasos + " ) -> "+ ((nuevaPosicionY < 0 || nuevaPosicionY >= indice || nuevaPosicionX >= indice) ? "null" : new Coordenada(nuevaPosicionY, nuevaPosicionX).toString()));
 		return (nuevaPosicionY < 0 || nuevaPosicionY >= indice || nuevaPosicionX >= indice) ? null : new Coordenada(nuevaPosicionY, nuevaPosicionX);
 
 	}
@@ -126,153 +137,376 @@ public class AlgoritmoListillo extends Algoritmo {
 	 */
 
 	char getLetraDeCoordenadaSinValidacion(Coordenada coordenada) {
-		System.out.println(
-				"                                   getLetraDeCoordenadaSinValidacion(coordenada " + coordenada.toString() + ")     ->   " + adn[coordenada.getFil()].charAt(coordenada.getCol()));
+		// // ---- System.out.println( " getLetraDeCoordenadaSinValidacion(coordenada " + coordenada.toString() + ") -> " + adn[coordenada.getFil()].charAt(coordenada.getCol()));
+		lecturas ++;
 		return adn[coordenada.getFil()].charAt(coordenada.getCol());
 	}
 
 	/**
 	 * unidad basica de analisis, puede determinar de la manera mas optima si un conjunto de letras es mutante o no. Se asume que el objeto matriz es global
+	 * 
+	 * la primera letra ya llega LEIDA por lo que no se accede a esa posicion sino a las siguientes.
 	 */
-	RangoYDatoSiguiente encontrarRangoMutante(inclinacion inc, Coordenada posicionInicial, int letrasDePalabra) {
-		System.out.println("encontrarRangoMutante(inclinacion: [" + inc + "] , posicionInicial: [" + posicionInicial.toString() + "], letrasDePalabra :[" + letrasDePalabra + "] )");
-		RangoYDatoSiguiente respuesta = null;
+	public static boolean CONTINUAR = true;
+	public static boolean NOCONTINUAR = false;
 
-		char letraBuscada = adn[posicionInicial.getFil()].charAt(posicionInicial.getCol());
+// String[] adnMutante = {  "TTTTTG",
+	// "TTGTGC",
+	// "TTTTGT",
+	// "TGATGG",
+	// "CCCCTA",
+	// "TCACTG", };
+	// SiguienteAccion encontrarRangoMutante(inclinacion inc, Coordenada posicionInicial, char letraBuscada) {
 
-		Coordenada posicionFinal = getSiguienteValida(posicionInicial, inc, letrasDePalabra - 1);
-
-		// datos fuera del rango pero utiles si aun seguimos sin saber si habemus mutante o no.
-		char letraSiguiente;
-		Coordenada coordenadaSiguiente = posicionFinal; // esto nos sirve mas adelante
-
-		// comparamos las letras de la inicial y la final
-		System.out.println("if (letraBuscada == adn[posicionFinal.getFil()].charAt(posicionFinal.getCol())) {");
-		System.out.println("        " + letraBuscada + "       ==    " + adn[posicionFinal.getFil()].charAt(posicionFinal.getCol()) + "");
-		if (letraBuscada == adn[posicionFinal.getFil()].charAt(posicionFinal.getCol())) {
-			
-			System.out.println(" - SI   si la inicial y la final son iguales es indicio de posible mutante");
-			// si la inicial y la final son iguales es indicio de posible mutante
-			// recorro las posiciones intermerdias y si encuentro alguna letra diferente retorno null
-			System.out.println(" pasos intermedios pendientes por recorrer_:letrasDePalabra{" + letrasDePalabra + "} - 2  = " + (letrasDePalabra - 2));
-			for (int paso = 0; paso < letrasDePalabra - 2; paso++) {
-				System.out.println("        recorriendo intermedio  " + (paso + 1) + "/" + (letrasDePalabra - 2));
-				System.out.println("        if (letraBuscada != getLetraDeCoordenadaSinValidacion(getSiguienteValida(posicionInicial, inc, paso + 1))) {");
-				System.out.println("               " + letraBuscada + "     !=     " + getLetraDeCoordenadaSinValidacion(getSiguienteValida(posicionInicial, inc, paso + 1)));
-				if (letraBuscada != getLetraDeCoordenadaSinValidacion(getSiguienteValida(posicionInicial, inc, paso + 1))) {
-					System.out.println("            SI, DIFERENTE return null");
-					return null;
-				} else {
-					System.out.println("            NO, IGUAL seguimos en el ciclo");
-
-				}
+	/**
+	 * este metodo se iba a llamar preparar instrucciones pero pues ... si la preparo, estoy leyendo posiciones que no me interesan. porque estaria releyengo...
+	 */
+	boolean recorrerInstruccionesYNotificarHallazgoMutante() {
+		char letraInicial;
+		Coordenada coordenadaInicial = new Coordenada(0, 0);
+		for (int i = 0; i < indice; i++) {
+			if (hallazgos >= 2) {
+				// // ---- System.out.println("SE DETUBO LA ITERACION DE INSTRUCCIONES PORQUE ENCONTRAMOS UN MUTANTE");
+				return true;
 			}
-			System.out.println("Si llegue hasta aqui es que todas las letras son iguales. pero ahora hay que seguir porcesando");
-			respuesta = new RangoYDatoSiguiente(new Rango(posicionInicial, posicionFinal));
-			respuesta.setLetraBuscada(letraBuscada);
-			// Si llegue hasta aqui es que todas las letras son iguales. Exito en la busqueda. podriamos notificar del hallazgo pero hay algo extra por analizar:
-			// El objetico de todo el metodo es hallar mas de 1 caso mutante, es decir 2 o mas. y por eficiencia solo nos interesa llegar a 2.
-			// si este hallazgo, en el que estamos parados es el segundo, entonces solo debemos notificarlo y ya, FIN.
-			// por otra parte si este es el primer hallazgo se debe continuar buscando. entonces como ya encontramos toda una cadena larga debemos descartar que esta se extienda mas
+			// horizontales
+			coordenadaInicial.setCol(0);
+			coordenadaInicial.setFil(i);
+			letraInicial = getLetraDeCoordenadaSinValidacion(coordenadaInicial);
 
-			// evaluamos la variable hallazgos que le pertenece a la superclase Algoritmo y por ser protegida se puele leer directamente desde aqui. privilegios de ser el hijo de papi.
-			System.out.println("Como estamos de hallazgos globales???");
-			if (hallazgos < 1) {
-				
-				System.out.println("hallazgos < 1  toca seguir ...");
-				// encontramos cuantos pasos nos falta hasta el borde
-				int pasosFaltantes = (this.indice - 1) - (inc == inclinacion.vertical ? posicionFinal.getFil() : posicionFinal.getCol());
-				for (; pasosFaltantes > 0; pasosFaltantes--) {
-					coordenadaSiguiente = getSiguienteValida(coordenadaSiguiente, inc, 1);
+			procesarLineaCompleta(new Instruccion(CONTINUAR, inclinacion.horizontal, letraInicial, coordenadaInicial, letraInicial));
+		}
+		for (int i = 0; i < indice; i++) {
+			if (hallazgos >= 2) {
+				// // ---- System.out.println("SE DETUBO LA ITERACION DE INSTRUCCIONES PORQUE ENCONTRAMOS UN MUTANTE");
+				return true;
+			}
+			// verticales
+			coordenadaInicial.setCol(i);
+			coordenadaInicial.setFil(0);
+			letraInicial = getLetraDeCoordenadaSinValidacion(coordenadaInicial);
+
+			procesarLineaCompleta(new Instruccion(CONTINUAR, inclinacion.vertical, letraInicial, coordenadaInicial, letraInicial));
+
+		}
+//		// DIAGONAL PRINCIPAL SUPERIOR
+		for (int i = 0; i < indice; i++) {
+			if (hallazgos >= 2) {
+				// // ---- System.out.println("SE DETUBO LA ITERACION DE INSTRUCCIONES PORQUE ENCONTRAMOS UN MUTANTE");
+				return true;
+			}
+			if (indice - i >= limiteDeSecuencia) {
+				coordenadaInicial.setCol(i);
+				coordenadaInicial.setFil(0);
+				letraInicial = getLetraDeCoordenadaSinValidacion(coordenadaInicial);
+
+				procesarLineaCompleta(new Instruccion(CONTINUAR, inclinacion.diagonalPrincipal, letraInicial, coordenadaInicial, letraInicial));
+			}
+
+		}
+		// DIAGONAL PRINCIPAL INFERIOR
+		for (int i = 1; i < indice; i++) {
+			if (hallazgos >= 2) {
+				// // ---- System.out.println("SE DETUBO LA ITERACION DE INSTRUCCIONES PORQUE ENCONTRAMOS UN MUTANTE");
+				return true;
+			}
+			if (indice - i >= limiteDeSecuencia) {
+				coordenadaInicial.setCol(0);
+				coordenadaInicial.setFil(i);
+				letraInicial = getLetraDeCoordenadaSinValidacion(coordenadaInicial);
+
+				procesarLineaCompleta(new Instruccion(CONTINUAR, inclinacion.diagonalPrincipal, letraInicial, coordenadaInicial, letraInicial));
+			}
+
+		}
+		// DIAGONAL INVERSA SUPERIOR
+		for (int i = 0; i < indice; i++) {
+			if (hallazgos >= 2) {
+				// // ---- System.out.println("SE DETUBO LA ITERACION DE INSTRUCCIONES PORQUE ENCONTRAMOS UN MUTANTE");
+				return true;
+			}
+			if (indice - i >= limiteDeSecuencia) {
+				coordenadaInicial.setCol(i);
+				coordenadaInicial.setFil(indice - 1); // siempre la de abajo
+				letraInicial = getLetraDeCoordenadaSinValidacion(coordenadaInicial);
+
+				procesarLineaCompleta(new Instruccion(CONTINUAR, inclinacion.diagonalInversa, letraInicial, coordenadaInicial, letraInicial));
+			}
+		}
+//
+		// DIAGONAL INVERSA INFERIOR
+		for (int i = 0; i < indice; i++) {
+			if (hallazgos >= 2) {
+				// // ---- System.out.println("SE DETUBO LA ITERACION DE INSTRUCCIONES PORQUE ENCONTRAMOS UN MUTANTE");
+				return true;
+			}
+			if (indice - i >= limiteDeSecuencia) {
+				coordenadaInicial.setCol(0); // siempre el borde de la izquierda
+				coordenadaInicial.setFil((indice - 1) - i); // siempre la de abajo
+				letraInicial = getLetraDeCoordenadaSinValidacion(coordenadaInicial);
+
+				procesarLineaCompleta(new Instruccion(CONTINUAR, inclinacion.diagonalInversa, letraInicial, coordenadaInicial, letraInicial));
+			}
+		}
+		return false;
+	}
+
+	Instruccion encontrarRangoMutante(Instruccion siguienteAccion) {
+		// ---- System.out.println("encontrarRangoMutante()");
+		if (siguienteAccion != null && siguienteAccion.isContinuar()) {
+			// ---- System.out.println("encontrarRangoMutante(inclinacion: [" + siguienteAccion.getInc() + "] , posicionInicial: [" + siguienteAccion.getCoordenadaSiguiente().toString()+ "],letrasDePalabra :[" + Algoritmo.limiteDeSecuencia + "] )");
+
+			// SiguienteAccion respuesta = new SiguienteAccion();
+			// char letraBuscada = adn[posicionInicial.getFil()].charAt(posicionInicial.getCol());
+			// respuesta.setLetraBuscada(letraBuscada);
+
+			Coordenada posicionFinal = getSiguienteCoordenadaValida(siguienteAccion.getCoordenadaSiguiente(), siguienteAccion.getInc(), Algoritmo.limiteDeSecuencia - 1);
+
+			// datos fuera del rango pero utiles si aun seguimos sin saber si habemus mutante o no.
+			char letraSiguiente = 'X';
+			char letraFinal = 'X';
+			Coordenada coordenadaSiguiente = posicionFinal; // esto nos sirve mas adelante
+
+			// comparamos las letras de la inicial y la final
+			// // // ---- System.out.println("if (letraBuscada == adn[posicionFinal.getFil()].charAt(posicionFinal.getCol())) {");
+			if (posicionFinal == null) {
+				// ---- System.out.println("NO HAY MAS");
+				return new Instruccion(NOCONTINUAR);
+			} else {
+				// ---- System.out.println(" " + siguienteAccion.getLetraBuscada() + " == " + adn[posicionFinal.getFil()].charAt(posicionFinal.getCol()) + "");
+				letraSiguiente = adn[posicionFinal.getFil()].charAt(posicionFinal.getCol());
+				letraFinal = letraSiguiente;
+				if (siguienteAccion.getLetraBuscada() == letraSiguiente) {
+
+					// ---- System.out.println(" - SI si la inicial y la final son iguales es indicio de posible mutante");
+					// si la inicial y la final son iguales es indicio de posible mutante
+					// recorro las posiciones intermerdias y si encuentro alguna letra diferente retorno null
+					// ---- System.out.println(" pasos intermedios pendientes por recorrer_:letrasDePalabra{" + Algoritmo.limiteDeSecuencia + "} - 2 = " + (Algoritmo.limiteDeSecuencia - 2));
+					for (int paso = 0; paso < Algoritmo.limiteDeSecuencia - 2; paso++) {
+						// ---- System.out.println(" recorriendo intermedio " + (paso + 1) + "/" + (Algoritmo.limiteDeSecuencia - 2));
+						// // ---- System.out.println(" if (letraBuscada != getLetraDeCoordenadaSinValidacion(getSiguienteValida(posicionInicial, inc, paso + 1))) {");
+						// // ---- System.out.println(" " + siguienteAccion.getLetraBuscada() + " != " +
+						// getLetraDeCoordenadaSinValidacion(getSiguienteCoordenadaValida(siguienteAccion.getCoordenadaSiguiente(), siguienteAccion.getInc(), paso + 1)));
+						// Como estamos buscando entre coordenadas de extremos, se asume que en el intermedio habra coordenadas validas y con letra
+
+						char letraIntermediaEncontrada = getLetraDeCoordenadaSinValidacion(getSiguienteCoordenadaValida(siguienteAccion.getCoordenadaSiguiente(), siguienteAccion.getInc(), paso + 1));
+						if (siguienteAccion.getLetraBuscada() != letraIntermediaEncontrada) {
+							// ---- System.out.println(" SI, DIFERENTE return Nueva accion de CONTINUAR");
+							// Se leyo la letra de la coordenada final y esta no correspondio a la buscada
+							// se trata de leer la siguiete posicion, para poder decidir la siguiente accion
+							// boolean continuar, char letraBuscada, Coordenada coordenadaSiguiente, char letraSiguiente
+							coordenadaSiguiente = getSiguienteCoordenadaValida(posicionFinal, siguienteAccion.getInc(), 1);
+
+							if (coordenadaSiguiente == null) {
+								// ---- System.out.println("           no hay coordenada, es el final de la frase");
+								// letraSiguiente = getLetraDeCoordenadaSinValidacion(coordenadaSiguiente);
+								return new Instruccion(NOCONTINUAR);
+							} else {
+								// SE DEBE CONTINUAR DESDE LA FINAL YA QUE PUEDE SER INICIO DE ALGO MUTANTE
+								// letraSiguiente = getLetraDeCoordenadaSinValidacion(coordenadaSiguiente);
+								// ---- System.out.println("           si hay coordenada, no es el final de la frase");
+								return new Instruccion(CONTINUAR, siguienteAccion.getInc(), siguienteAccion.getLetraBuscada(), posicionFinal, letraFinal);
+							}
+
+						} else {
+							// ---- System.out.println(" NO, IGUAL seguimos en el ciclo");
+
+						}
+					}
+					hallazgos++;
+					// ---- System.out.println("<<MUTANTE>> cant: " + hallazgos + " Si llegue hasta aqui es que todas las letras son iguales. pero ahora hay que seguir porcesando");
+//				respuesta = new SiguienteAccion(new Rango(posicionInicial, posicionFinal));
+//				respuesta.setLetraBuscada(letraBuscada);
+					// Si llegue hasta aqui es que todas las letras son iguales. Exito en la busqueda. podriamos notificar del hallazgo pero hay algo extra por analizar:
+					// El objetico de todo el metodo es hallar mas de 1 caso mutante, es decir 2 o mas. y por eficiencia solo nos interesa llegar a 2.
+					// si este hallazgo, en el que estamos parados es el segundo, entonces solo debemos notificarlo y ya, FIN.
+					// por otra parte si este es el primer hallazgo se debe continuar buscando. entonces como ya encontramos toda una cadena larga debemos descartar que esta se extienda mas
+
+					// evaluamos la variable hallazgos que le pertenece a la superclase Algoritmo y por ser protegida se puele leer directamente desde aqui. privilegios de ser el hijo de papi.
+					// // ---- System.out.println("Como estamos de hallazgos globales???");
+					if (hallazgos <= limiteDeHallazgos) {
+
+						// ---- System.out.println("hallazgos < 1 toca seguir ...");
+						// encontramos cuantos pasos nos falta hasta el borde
+						int pasosFaltantes = (this.indice - 1) - (siguienteAccion.getInc() == inclinacion.vertical ? posicionFinal.getFil() : posicionFinal.getCol());
+						for (; pasosFaltantes > 0; pasosFaltantes--) {
+							coordenadaSiguiente = getSiguienteCoordenadaValida(coordenadaSiguiente, siguienteAccion.getInc(), 1);
+
+							// caso donde ya tenemos un rango mutante pero llegamos al final de la linea.
+							if (coordenadaSiguiente == null) {
+								// ---- System.out.println("ALERTAAAAAA ESTO NUUUUUUNCAAAA DEBEBEEEE LEERSEEEEEEE ALERTA!!!!!!!!!!!!!!!!!!!!!!!!!!");
+								return null; // TOFIX: si estamos en este ciclo for, nunca deberia entrar a este if ya que previamente se averiguo cuantos pasos faltaban para el final y dado qque SI
+												// faltaban pudimos entrar, asi que no tiene sentido que no haya una posicion siguiente valida
+							} else {
+								// sabenos que la siguiente posicion no es nula asi que leemos la letra
+								letraSiguiente = getLetraDeCoordenadaSinValidacion(coordenadaSiguiente);
+								// asignamos la posicion y la letra a la respuesta extra
+//							respuesta.setLetraSiguiente(letraSiguiente);
+//							respuesta.setCoordenadaSiguiente(coordenadaSiguiente);
+								if (siguienteAccion.getLetraBuscada() != letraSiguiente) {
+									// Aqui se detiene todo ya que encontramos una letra distinta a la buscada, por lo que se retorna.
+									// notar que en la respuesta extra el valor de letraBuscada sera distinto a letra siguiene, esto le indica a la funcion externa que aun hay nuevas cosas por leer.
+
+									return new Instruccion(CONTINUAR, siguienteAccion.getInc(), siguienteAccion.getLetraBuscada(), coordenadaSiguiente, letraSiguiente);
+								}
+								// else: en este punto sabemos que la letra actual es igual a lka buscada por lo que seguimos en el ciclo
+							}
+						}
+						// si salimos del ciclo y llegamos hasta aqui es porque todas las letras hasta el final de la frase eran iguales
+						// notar que en la respuesta extra el valor de letraBuscada sera igual a letra siguiente, esto le indica a la funcion externa que llegamos al final de la frase.
+						return new Instruccion(NOCONTINUAR);
+					} else {
+						// ---- System.out.println("hallazgos > 1 toca AVISAR Y SALIR DE AQUI SIN HACER NADA MAS ... !!!");
+						return new Instruccion(NOCONTINUAR);
+					}
+				} else {
+					// // // ---- System.out.println("NOT !!!! hallazgos < 1 toca PARAR");
+					// ---- System.out.println(" - NO si la inicial y la final son distintas se descarta ese rango. Sin embargo se consulta si hay algo mas a la ''derecha''");
+					// si la inicial y la final son distintas se descarta ese rango. Se retorna false y fin del metodo.
+					// return new SiguienteAccion(NOCONTINUAR, letraBuscada, null, letraSiguiente);
+
+					coordenadaSiguiente = getSiguienteCoordenadaValida(posicionFinal, siguienteAccion.getInc(), 1);
 
 					// caso donde ya tenemos un rango mutante pero llegamos al final de la linea.
 					if (coordenadaSiguiente == null) {
-						System.out.println("ALERTAAAAAA ESTO NUUUUUUNCAAAA DEBEBEEEE LEERSEEEEEEE ALERTA!!!!!!!!!!!!!!!!!!!!!!!!!!");
-						return respuesta; // TOFIX: si estamos en este ciclo for, nunca deberia entrar a este if ya que previamente se averiguo cuantos pasos faltaban para el final y dado qque SI
-											// faltaban pudimos entrar, asi que no tiene sentido que no haya una posicion siguiente valida
+						// ---- System.out.println("No hay nada mas a la derecha, se acabo la fila. Aqui no hubo mutante");
+						return new Instruccion(NOCONTINUAR);
 					} else {
 						// sabenos que la siguiente posicion no es nula asi que leemos la letra
 						letraSiguiente = getLetraDeCoordenadaSinValidacion(coordenadaSiguiente);
-						// asignamos la posicion y la letra a la respuesta extra
-						respuesta.setLetraSiguiente(letraSiguiente);
-						respuesta.setCoordenadaSiguiente(coordenadaSiguiente);
-						if (letraBuscada != letraSiguiente) {
-							// Aqui se detiene todo ya que encontramos una letra distinta a la buscada, por lo que se retorna.
-							// notar que en la respuesta extra el valor de letraBuscada sera distinto a letra siguiene, esto le indica a la funcion externa que aun hay nuevas cosas por leer.
-							
-							return respuesta;
-						}
-						// else: en este punto sabemos que la letra actual es igual a lka buscada por lo que seguimos en el ciclo
+						// ---- System.out.println("si hay algo mas a la derecha, la siguiente posicion es " + coordenadaSiguiente.toString() + "y su letra es " + letraSiguiente);
+						return new Instruccion(CONTINUAR, siguienteAccion.getInc(), siguienteAccion.getLetraBuscada(), coordenadaSiguiente, letraSiguiente);
 					}
+
 				}
-				// si salimos del ciclo y llegamos hasta aqui es porque todas las letras hasta el final de la frase eran iguales
-				// notar que en la respuesta extra el valor de letraBuscada sera igual a letra siguiente, esto le indica a la funcion externa que llegamos al final de la frase.
-				return respuesta;
 			}
 		} else {
-			System.out.println("NOT !!!! hallazgos < 1  toca PARAR");
-			System.out.println(" - NO  si la inicial y la final son distintas se descarta ese rango. Se retorna false y fin del metodo. RETURN NULL");
-			// si la inicial y la final son distintas se descarta ese rango. Se retorna false y fin del metodo.
-			return null;
+			// ---- System.out.println("SE DIO LA ORDEN DE NO CONTINUAR");
+			return new Instruccion(NOCONTINUAR);
 		}
-		return null;
 	}
-	
-	void analisisDeEncontrarRangoMutante(RangoYDatoSiguiente info) {
-		
-		System.out.println("");
-		System.out.println("");
-		System.out.println("ANALISIS");
-		System.out.println("");
-		if(info.getRango()==null) {
-			System.out.println("Aqui no hay mutantes");
-		}else {
-			if(info.getLetraBuscada() == info.getLetraSiguiente()) {
-				System.out.println("Aqui SI hay mutantes y toda la frase tiene adn mutante");
-			}else {
-				System.out.println("Aqui SI hay mutantes y pero en la frase hay otro adn sin explorar");
-				System.out.println("ese adn sin explorar inicia en la pos " + info.getCoordenadaSiguiente().toString() + " y comienaz con la letra " + info.getLetraSiguiente());
+
+	void analisisDeEncontrarRangoMutante(Instruccion info) {
+
+		// // ---- System.out.println("");
+		// // ---- System.out.println("");
+		// // ---- System.out.println("ANALISIS");
+		// // ---- System.out.println("");
+		if (info == null) {
+			// // ---- System.out.println("Aqui no hay mutantes");
+		} else {
+			if (info.getLetraBuscada() == info.getLetraSiguiente()) {
+				// // ---- System.out.println("Aqui SI hay mutantes y toda la frase tiene adn mutante");
+			} else {
+				// // ---- System.out.println("Aqui SI hay mutantes y pero en la frase hay otro adn sin explorar");
+				// // ---- System.out.println("ese adn sin explorar inicia en la pos " + info.getCoordenadaSiguiente().toString() + " y comienaz con la letra " + info.getLetraSiguiente());
 			}
 		}
-	
+
+	}
+
+	// analisisDeEncontrarRangoMutante(encontrarRangoMutante(inclinacion.diagonalPrincipal, new Coordenada(0, 0), 4));
+	void procesarLineaCompleta(Instruccion instruccionInicial) {
+		// Coordenada coordenadaSiguiente = instruccion.getCoordenadaSiguiente();
+		// char letraInicial = adn[instruccion.getCoordenadaSiguiente().getFil()].charAt(instruccion.getCoordenadaSiguiente().getCol());
+		Instruccion siguienteAccion = instruccionInicial;
+		do {
+			// ---- System.out.println("SE EJECUTA EL INICIO DE UN CICLO DENTRO DE LA linea");
+			siguienteAccion = encontrarRangoMutante(siguienteAccion);
+		} while (siguienteAccion != null && siguienteAccion.isContinuar());
 	}
 
 	@Override
 	public boolean isMutant(String[] adn) throws DatosInvalidosException {
 		validarCadenas(adn);
-
 		this.adn = adn;
 		this.indice = adn.length;
 
-		// La idea es ir dando saltos en el arreglo hasta llegar al sigueinte valor que deberia ser igual al prmero para considerarse un hallazgo
-		// será un ciclo while que se concluirá cuando se active la bandera de barrido totalmente o de manera abrupta con el hallazgo de 2 casos positivos para mutante
-		// aqui habra ciclos dentro de ciclos por lo que al darse el hallazgo se notifica con un return
-
-		boolean debemosContinuar = true;
-		int punteroPrincipal = 0;
-		// while (debemosContinuar) {
-		// }
-		analisisDeEncontrarRangoMutante(encontrarRangoMutante(inclinacion.horizontal, new Coordenada(0, 0), 4));
-
-		return false;
+		return recorrerInstruccionesYNotificarHallazgoMutante();
 	}
 
 	public static void main(String[] args) {
-		AlgoritmoListillo app = new AlgoritmoListillo();
-		String[] adnHumano = { "ATGCGA", "CAGTGC", "TTATTT", "AGACGG", "GCGTCA", "TCACTG" };
-		String[] adnMutante = { "TTTTTG", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG", };
+		AlgoritmoRegex app1 = new AlgoritmoRegex();
+		AlgoritmoRegexEstricto app2 = new AlgoritmoRegexEstricto();
+		AlgoritmoListillo app3 = new AlgoritmoListillo();
+		// @formatter:off
+		String[] adnHumano = { 
+				"ATGCGA", 
+				"CAGTGC", 
+				"TTATTT", 
+				"AGACGG", 
+				"GCGTCA", 
+				"TCACTG" }; // @formatter:on
+		String[] adnMutante = { "TTTTTG", "TTGTGC", "TTTTGT", "TGATGG", "CCCCTA", "TCACTG", };
 
 		try {
-			app.isMutant(adnMutante);
+			boolean esMutante = false;
+			long startTime = System.currentTimeMillis();
+			for (int i = 0; i < 1000000; i++) {
+				esMutante = app1.isMutant(adnHumano);
+			}
+			long stopTime = System.currentTimeMillis();
+
+			if (esMutante) {
+				// ---- System.out.println("MUTANTE");
+			} else {
+				// ---- System.out.println("HUMANO");
+			}
+			System.out.println("APP1 tiempo de ejecucion: " + (stopTime - startTime) + "ms Se realizaron [?] lecturas desde el archivo");
+			// ---- System.out.println("tiempo de ejecucion: " + (stopTime - startTime) + "ms");
+		} catch (DatosInvalidosException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		try {
+			boolean esMutante = false;
+			long startTime = System.currentTimeMillis();
+			for (int i = 0; i < 1000000; i++) {
+				esMutante = app2.isMutant(adnHumano);
+			}
+			long stopTime = System.currentTimeMillis();
+
+			if (esMutante) {
+				// ---- System.out.println("MUTANTE");
+			} else {
+				// ---- System.out.println("HUMANO");
+			}
+			System.out.println("APP2 tiempo de ejecucion: " + (stopTime - startTime) + "ms Se realizaron [?] lecturas desde el archivo");
+			// ---- System.out.println("tiempo de ejecucion: " + (stopTime - startTime) + "ms");
+		} catch (DatosInvalidosException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		try {
+			boolean esMutante = false;
+			long startTime = System.currentTimeMillis();
+			for (int i = 0; i < 1000000; i++) {
+				esMutante = app3.isMutant(adnHumano);
+			}
+			long stopTime = System.currentTimeMillis();
+
+			if (esMutante) {
+				// ---- System.out.println("MUTANTE");
+			} else {
+				// ---- System.out.println("HUMANO");
+			}
+			System.out.println("APP3 tiempo de ejecucion: " + (stopTime - startTime) + "ms Se realizaron [?] lecturas desde el archivo");
+			// ---- System.out.println("tiempo de ejecucion: " + (stopTime - startTime) + "ms");
 		} catch (DatosInvalidosException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		// System.out.println("hola " + AlgoritmoListillo.inclinacion.diagonalPrincipal);
+		
+
+		// // // ---- System.out.println("hola " + AlgoritmoListillo.inclinacion.diagonalPrincipal);
 //		// pruebas de obtener coordenadas en 1 y 2 dimensiones.
 //		// for(int i=0 ; i<200 ; i++) {
-//		// System.out.println("" + i + "" + app.getCoordenadas2D(i, 6));
+//		// // // ---- System.out.println("" + i + "" + app.getCoordenadas2D(i, 6));
 //		// }
 //
 //		// pruebas de obtener nuevas coordenadas en 2D
@@ -294,17 +528,17 @@ public class AlgoritmoListillo extends Algoritmo {
 //
 //		for (Coordenada c : coordenadasDePrueba) {
 //
-//			System.out.println("desde " + c.toString() + " [ - ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.horizontal, 1));
-//			System.out.println("desde " + c.toString() + " [ - ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.horizontal, 2));
+//			// // ---- System.out.println("desde " + c.toString() + " [ - ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.horizontal, 1));
+//			// // ---- System.out.println("desde " + c.toString() + " [ - ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.horizontal, 2));
 //
-//			System.out.println("desde " + c.toString() + " [ | ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.vertical, 1));
-//			System.out.println("desde " + c.toString() + " [ | ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.vertical, 2));
+//			// // ---- System.out.println("desde " + c.toString() + " [ | ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.vertical, 1));
+//			// // ---- System.out.println("desde " + c.toString() + " [ | ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.vertical, 2));
 //
-//			System.out.println("desde " + c.toString() + " [ \\ ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalPrincipal, 1));
-//			System.out.println("desde " + c.toString() + " [ \\ ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalPrincipal, 2));
+//			// // ---- System.out.println("desde " + c.toString() + " [ \\ ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalPrincipal, 1));
+//			// // ---- System.out.println("desde " + c.toString() + " [ \\ ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalPrincipal, 2));
 //
-//			System.out.println("desde " + c.toString() + " [ / ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalInversa, 1));
-//			System.out.println("desde " + c.toString() + " [ / ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalInversa, 2));
+//			// // ---- System.out.println("desde " + c.toString() + " [ / ] 1 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalInversa, 1));
+//			// // ---- System.out.println("desde " + c.toString() + " [ / ] 2 pasos adelante" + app.getSiguienteValida(c, inclinacion.diagonalInversa, 2));
 //
 //		}
 
@@ -369,40 +603,51 @@ class Rango {
 	}
 }
 
-class RangoYDatoSiguiente {
-	private Rango rango;
+class Instruccion {
+	private inclinacion inc;
+	private boolean continuar;
 	private Coordenada coordenadaSiguiente;
 	private char letraBuscada;
 	private char letraSiguiente;
 
-	public RangoYDatoSiguiente(Rango rango) {
-		super();
-		this.rango = rango;
-	}
+//	public SiguienteAccion() {
+//		super();
+//		continuar = false;
+//	}
 
-	public RangoYDatoSiguiente(Rango rango, Coordenada coordenadaSiguiente, char letraSiguiente) {
-		super();
-		this.rango = rango;
-		this.coordenadaSiguiente = coordenadaSiguiente;
-		this.letraSiguiente = letraSiguiente;
-	}
-	
-	
+//	public SiguienteAccion(Coordenada coordenadaSiguiente, char letraSiguiente) {
+//		super();
+//		this.coordenadaSiguiente = coordenadaSiguiente;
+//		this.letraSiguiente = letraSiguiente;
+//	}
 
 	public char getLetraBuscada() {
 		return letraBuscada;
 	}
 
+	public Instruccion(boolean continuar) {
+		super();
+		this.continuar = continuar;
+	}
+
+	/**
+	 * 
+	 * @param continuar
+	 * @param coordenadaSiguiente
+	 * @param letraBuscada
+	 * @param letraSiguiente
+	 */
+	public Instruccion(boolean continuar, inclinacion inc, char letraBuscada, Coordenada coordenadaSiguiente, char letraSiguiente) {
+		super();
+		this.continuar = continuar;
+		this.coordenadaSiguiente = coordenadaSiguiente;
+		this.letraBuscada = letraBuscada;
+		this.letraSiguiente = letraSiguiente;
+		this.inc = inc;
+	}
+
 	public void setLetraBuscada(char letraBuscada) {
 		this.letraBuscada = letraBuscada;
-	}
-
-	public Rango getRango() {
-		return rango;
-	}
-
-	public void setRango(Rango rango) {
-		this.rango = rango;
 	}
 
 	public Coordenada getCoordenadaSiguiente() {
@@ -419,6 +664,22 @@ class RangoYDatoSiguiente {
 
 	public void setLetraSiguiente(char letraSiguiente) {
 		this.letraSiguiente = letraSiguiente;
+	}
+
+	public boolean isContinuar() {
+		return continuar;
+	}
+
+	public void setContinuar(boolean continuar) {
+		this.continuar = continuar;
+	}
+
+	public inclinacion getInc() {
+		return inc;
+	}
+
+	public void setInc(inclinacion inc) {
+		this.inc = inc;
 	}
 
 }
